@@ -1,20 +1,336 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+"# Career Compass AI - Modern Career Guidance Platform
 
-# Run and deploy your AI Studio app
+## 🎯 Overview
 
-This contains everything you need to run your app locally.
+Career Compass AI is a modern, full-stack AI-powered career guidance platform that provides personalized career path analysis and detailed roadmaps. Built with FastAPI, PostgreSQL, React, and Gemini AI.
 
-View your app in AI Studio: https://ai.studio/apps/drive/19p9hNbxM906eZIFvR3nzf0E3L_PKd4nc
+## ✨ Features
 
-## Run Locally
+### 🔐 Authentication
+- User registration and login with JWT tokens
+- Secure password hashing with bcrypt
+- Session persistence
 
-**Prerequisites:**  Node.js
+### 👤 Profile Management
+- **PDF CV Upload** (replacing text input) - Maximum 5MB
+- Profile picture upload (stored as base64 in database)
+- Personal information (name, degree, qualifications, skills)
+- **User-provided Gemini API Key** for AI analysis
+- Complete data persistence - all information saved to PostgreSQL
 
+### 🤖 AI-Powered Analysis
+- **Career Path Analysis**: Get top 5 personalized career recommendations
+- **Career Search**: Search for specific careers with tailored guidance
+- Detailed roadmaps with step-by-step instructions
+- Required skills identification
+- Suitability analysis based on your profile
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### 🎨 Modern UI/UX
+- **Beautiful gradients and hover effects** on all components
+- **Dark/Light mode** with smooth transitions
+- Professional, modern design
+- Fully responsive layout
+- Animated interactions
+
+## 🏗️ Tech Stack
+
+### Backend
+- **FastAPI** - Modern Python web framework
+- **PostgreSQL** - Robust relational database
+- **SQLAlchemy** - ORM for database operations
+- **JWT Authentication** - Secure token-based auth
+- **PyPDF2** - PDF text extraction
+- **Gemini AI** - Google's latest AI model (gemini-2.0-flash-exp)
+
+### Frontend
+- **React 19** - Latest React with TypeScript
+- **Vite** - Fast build tool
+- **Tailwind CSS** - Utility-first CSS with custom gradients
+- **Axios** - HTTP client for API calls
+- **React Icons** - Beautiful icon library
+
+### Database Schema
+```sql
+users
+  - id, email, password_hash, created_at
+  
+profiles
+  - id, user_id, name, degree, qualifications, skills
+  - gemini_api_key, profile_picture_base64, cv_pdf_base64, cv_text
+  
+career_analyses
+  - id, user_id, analysis_result_json, created_at
+```
+
+## 🚀 Running the Application
+
+### Services Status
+
+Check service status:
+```bash
+sudo supervisorctl status
+```
+
+### Backend (Port 8001)
+```bash
+# Restart backend
+sudo supervisorctl restart backend
+
+# View logs
+tail -f /var/log/supervisor/backend.out.log
+tail -f /var/log/supervisor/backend.err.log
+```
+
+### Frontend (Port 3000)
+Frontend is running manually:
+```bash
+# Check if running
+ps aux | grep vite
+
+# View logs
+tail -f /var/log/frontend.log
+
+# Restart if needed
+pkill -f \"vite --host\"
+cd /app/frontend && nohup yarn dev --host 0.0.0.0 --port 3000 > /var/log/frontend.log 2>&1 &
+```
+
+### PostgreSQL
+```bash
+# Check status
+pg_isready -h localhost -p 5432
+
+# Access database
+sudo -u postgres psql career_compass
+```
+
+## 📁 Project Structure
+
+```
+/app/
+├── backend/
+│   ├── server.py           # Main FastAPI application
+│   ├── database.py         # Database models and connection
+│   ├── auth.py             # Authentication logic
+│   ├── gemini_service.py   # Gemini AI integration
+│   ├── pdf_parser.py       # PDF text extraction
+│   ├── requirements.txt    # Python dependencies
+│   └── .env               # Environment variables
+│
+└── frontend/
+    ├── src/
+    │   ├── components/     # React components
+    │   │   ├── HomePage.tsx
+    │   │   ├── Login.tsx
+    │   │   ├── Dashboard.tsx
+    │   │   ├── ProfileForm.tsx
+    │   │   ├── CareerAnalysis.tsx
+    │   │   ├── CareerSearch.tsx
+    │   │   ├── Footer.tsx
+    │   │   ├── Spinner.tsx
+    │   │   └── icons.tsx
+    │   ├── context/        # React contexts
+    │   │   ├── AuthContext.tsx
+    │   │   └── ThemeContext.tsx
+    │   ├── services/       # API services
+    │   │   └── api.ts
+    │   ├── utils/          # Utility functions
+    │   │   └── fileHelpers.ts
+    │   ├── types.ts        # TypeScript types
+    │   ├── App.tsx         # Main app component
+    │   ├── index.tsx       # Entry point
+    │   └── index.css       # Global styles
+    ├── package.json        # Dependencies
+    ├── tailwind.config.js  # Tailwind configuration
+    ├── vite.config.ts      # Vite configuration
+    └── .env               # Environment variables
+```
+
+## 🔑 API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+
+### Profile
+- `GET /api/profile` - Get user profile
+- `PUT /api/profile` - Update profile (with PDF upload)
+
+### Career Analysis
+- `POST /api/analyze-career` - Analyze career paths (requires complete profile)
+- `POST /api/search-career` - Search specific career
+- `GET /api/analyses` - Get past analyses
+
+### Health Check
+- `GET /api/health` - Check API status
+
+## 🎯 User Flow
+
+1. **Sign Up/Login** → User creates account or logs in
+2. **Complete Profile** → User fills in:
+   - Name, degree, qualifications, skills
+   - **Upload CV (PDF)** - automatically parsed
+   - **Provide Gemini API Key** (get from https://aistudio.google.com/app/apikey)
+   - Upload profile picture (optional)
+3. **Get Analysis** → AI analyzes profile and suggests top 5 career paths
+4. **Explore Roadmaps** → View detailed step-by-step guidance for each career
+5. **Search Careers** → Search for specific careers and get personalized roadmaps
+
+## 🎨 Design Features
+
+### Gradient Colors
+- **Primary**: Purple (#667eea) to Blue (#0ea5e9)
+- **Secondary**: Pink (#f093fb) to Rose (#f5576c)
+- **Accent**: Cyan gradients for highlights
+
+### Hover Effects
+- Transform scale and translate on buttons
+- Shadow elevation on cards
+- Smooth color transitions
+- Animated roadmap reveals
+
+### Dark Mode
+- Complete dark theme support
+- Smooth transitions
+- Adjusted gradients for dark backgrounds
+- Persisted user preference
+
+## 📝 Environment Variables
+
+### Backend (.env)
+```env
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/career_compass
+SECRET_KEY=your-secret-key-change-this-in-production-min-32-chars
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=10080
+```
+
+### Frontend (.env)
+```env
+VITE_API_URL=http://localhost:8001
+```
+
+## 🔧 Development
+
+### Install Dependencies
+```bash
+# Backend
+cd /app/backend
+pip install -r requirements.txt
+
+# Frontend
+cd /app/frontend
+yarn install
+```
+
+### Run Development Servers
+```bash
+# Backend
+cd /app/backend
+python -m uvicorn server:app --reload --port 8001
+
+# Frontend
+cd /app/frontend
+yarn dev --port 3000
+```
+
+## 🐛 Troubleshooting
+
+### Backend Issues
+```bash
+# Check logs
+tail -f /var/log/supervisor/backend.err.log
+
+# Test database connection
+sudo -u postgres psql -c \"SELECT 1;\"
+
+# Restart backend
+sudo supervisorctl restart backend
+```
+
+### Frontend Issues
+```bash
+# Check if running
+curl http://localhost:3000
+
+# View logs
+tail -f /var/log/frontend.log
+
+# Clear cache and restart
+cd /app/frontend
+rm -rf node_modules/.vite
+yarn dev
+```
+
+### PostgreSQL Issues
+```bash
+# Check if running
+pg_isready
+
+# Restart PostgreSQL
+sudo -u postgres /usr/lib/postgresql/15/bin/pg_ctl restart -D /var/lib/postgresql/15/main
+```
+
+## 📊 Testing
+
+### Test Backend APIs
+```bash
+# Health check
+curl http://localhost:8001/api/health
+
+# Register
+curl -X POST http://localhost:8001/api/auth/register \
+  -H \"Content-Type: application/json\" \
+  -d '{\"email\":\"user@example.com\",\"password\":\"password123\"}'
+
+# Login
+curl -X POST http://localhost:8001/api/auth/login \
+  -H \"Content-Type: application/json\" \
+  -d '{\"email\":\"user@example.com\",\"password\":\"password123\"}'
+```
+
+## 🎓 Getting Gemini API Key
+
+1. Visit https://aistudio.google.com/app/apikey
+2. Sign in with your Google account
+3. Click \"Create API Key\"
+4. Copy the key and paste it in your profile
+
+## ⚡ Performance
+
+- Backend: FastAPI with async support
+- Frontend: Vite for instant HMR
+- Database: PostgreSQL with proper indexing
+- File uploads: Base64 encoding (max 5MB)
+
+## 🔒 Security
+
+- JWT token authentication
+- Bcrypt password hashing
+- SQL injection protection via SQLAlchemy
+- CORS configured
+- User-specific API keys stored securely
+
+## 📈 Future Enhancements
+
+- File storage on disk instead of base64
+- Email verification
+- Password reset functionality
+- Export roadmaps as PDF
+- Career comparison feature
+- Progress tracking
+- Social sharing
+
+## 💡 Notes
+
+- All user data including profile pictures are stored in PostgreSQL
+- CV PDFs are parsed automatically using PyPDF2
+- Each user must provide their own Gemini API key
+- Dark/Light mode preference is saved
+- All forms have proper validation
+- Responsive design works on all devices
+
+---
+
+**Built with ❤️ using FastAPI, React, PostgreSQL, and Gemini AI**
+"
