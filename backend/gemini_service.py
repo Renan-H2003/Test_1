@@ -23,13 +23,14 @@ class GeminiService:
         return await self._call_gemini(prompt)
     
     def _generate_analysis_prompt(self, profile: Dict[str, Any]) -> str:
-        return f"""
+        cv_text = profile.get('cv_text', 'Not provided')
+        prompt = f"""
 Analyze the following user profile:
 - Name: {profile.get('name', 'Not provided')}
 - Current Degree: {profile.get('degree', 'Not provided')}
 - Qualifications: {profile.get('qualifications', 'Not provided')}
 - Skills: {profile.get('skills', 'Not provided')}
-- CV/Resume Text: """{profile.get('cv_text', 'Not provided')}"""
+- CV/Resume Text: {cv_text}
 
 Based on the user's profile, identify the top 5 most suitable career paths.
 For each path, provide a detailed, step-by-step roadmap for success.
@@ -37,20 +38,21 @@ The roadmap should include essential skills to learn, projects to build, certifi
 
 Respond with ONLY a valid JSON array in this exact format:
 [
-  {{
+  {{{{
     "career_path": "Career Name",
     "suitability_reason": "Brief explanation of why this fits",
     "required_skills": ["Skill 1", "Skill 2", "Skill 3"],
     "roadmap": [
-      {{
+      {{{{
         "step": 1,
         "action": "Action title",
         "details": "Detailed description"
-      }}
+      }}}}
     ]
-  }}
+  }}}}
 ]
 """
+        return prompt
     
     def _generate_search_prompt(self, profile: Dict[str, Any], career_query: str) -> str:
         return f"""
